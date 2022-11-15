@@ -15,27 +15,30 @@ def cli():
     "Command line utility to access https://family.axioscloud.it"
 
 
-@cli.command(name="command")
-@click.argument(
-    "example"
-)
-@click.option(
-    "-o",
-    "--option",
-    help="An example option",
-)
-def first_command(example, option):
-    "Command description goes here"
-    click.echo("Here is some output")
+# @cli.command(name="command")
+# @click.argument(
+#     "example"
+# )
+# @click.option(
+#     "-o",
+#     "--option",
+#     help="An example option",
+# )
+# def first_command(example, option):
+#     "Command description goes here"
+#     click.echo("Here is some output")
 
 
 @cli.command(name="login")
-def login():
+@click.option('--username', "-u",  required=True, envvar="AXIOS_USERNAME")
+@click.option('--password', "-p", required=True, envvar="AXIOS_PASSWORD")
+@click.option('--customer-id', "-id", required=True, envvar="AXIOS_CUSTOMER_ID")
+def login(username: str, password: str, customer_id: str):
     nav = Navigator(
         Credentials(
-            username="username", 
-            password="password",
-            customer_id="91014810013",
+            username=username, 
+            password=password,
+            customer_id=customer_id
         )
     )
 
@@ -45,12 +48,15 @@ def login():
 
 
 @cli.command(name="list-grades")
-def login():
+@click.option('--username', "-u",  required=True, envvar="AXIOS_USERNAME")
+@click.option('--password', "-p", required=True, envvar="AXIOS_PASSWORD")
+@click.option('--customer-id', "-id", required=True, envvar="AXIOS_CUSTOMER_ID")
+def list_grades(username: str, password: str, customer_id: str):
     nav = Navigator(
         Credentials(
-            username="username", 
-            password="password",
-            customer_id="91014810013",
+            username=username,
+            password=password,
+            customer_id=customer_id,  # "91014810013",
         )
     )
 
