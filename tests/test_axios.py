@@ -6,10 +6,16 @@ from click.testing import CliRunner
 from axios.cli import cli
 
 
+env = {
+    "AXIOS_USERNAME": "username",
+    "AXIOS_PASSWORD": "password",
+    "AXIOS_CUSTOMER_ID": "91014810013",
+}
+
 def test_version():
     runner = CliRunner()
     with runner.isolated_filesystem():
-        result = runner.invoke(cli, ["--version"])
+        result = runner.invoke(cli, ["--version"], env=env)
         assert result.exit_code == 0
         assert result.output.startswith("cli, version ")
     assert result.exit_code == 0, result.output
@@ -21,7 +27,7 @@ def test_version():
 def test_login():
     runner = CliRunner()
     with runner.isolated_filesystem():
-        result = runner.invoke(cli, ["login"])
+        result = runner.invoke(cli, ["login"], env=env)
         assert result.exit_code == 0, result.output
         assert (
             "Logged in as BRANCA MAURIZIO (ISTITUTO COMPRENSIVO VEROLENGO)"
@@ -34,7 +40,7 @@ def test_login():
 def test_list_grades():
     runner = CliRunner()
     with runner.isolated_filesystem():
-        result = runner.invoke(cli, ["list-grades"])
+        result = runner.invoke(cli, ["list-grades"], env=env)
         assert result.exit_code == 0, result.output
         assert (
             # Click's CliRunner uses a terminal width of 80 characters, so
