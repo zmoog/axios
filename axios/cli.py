@@ -46,7 +46,7 @@ def list_grades(username: str, password: str, customer_id: str):
         Credentials(
             username=username,
             password=password,
-            customer_id=customer_id,  # "91014810013",
+            customer_id=customer_id,
         )
     )
 
