@@ -16,27 +16,31 @@ def cli():
 
 
 @cli.command(name="login")
-@click.option('--username', "-u",  required=True, envvar="AXIOS_USERNAME")
-@click.option('--password', "-p", required=True, envvar="AXIOS_PASSWORD")
-@click.option('--customer-id', "-id", required=True, envvar="AXIOS_CUSTOMER_ID")
+@click.option("--username", "-u", required=True, envvar="AXIOS_USERNAME")
+@click.option("--password", "-p", required=True, envvar="AXIOS_PASSWORD")
+@click.option(
+    "--customer-id", "-id", required=True, envvar="AXIOS_CUSTOMER_ID"
+)
 def login(username: str, password: str, customer_id: str):
     nav = Navigator(
         Credentials(
-            username=username, 
-            password=password,
-            customer_id=customer_id
+            username=username, password=password, customer_id=customer_id
         )
     )
 
     profile = nav.login()
 
-    click.echo(f"Logged in as {profile.name} ({profile.customer_title} {profile.customer_name})")
+    click.echo(
+        f"Logged in as {profile.name} ({profile.customer_title} {profile.customer_name})"
+    )
 
 
 @cli.command(name="list-grades")
-@click.option('--username', "-u",  required=True, envvar="AXIOS_USERNAME")
-@click.option('--password', "-p", required=True, envvar="AXIOS_PASSWORD")
-@click.option('--customer-id', "-id", required=True, envvar="AXIOS_CUSTOMER_ID")
+@click.option("--username", "-u", required=True, envvar="AXIOS_USERNAME")
+@click.option("--password", "-p", required=True, envvar="AXIOS_PASSWORD")
+@click.option(
+    "--customer-id", "-id", required=True, envvar="AXIOS_CUSTOMER_ID"
+)
 def list_grades(username: str, password: str, customer_id: str):
     nav = Navigator(
         Credentials(
@@ -48,7 +52,6 @@ def list_grades(username: str, password: str, customer_id: str):
 
     nav.login()
     grades = nav.list_grades()
-
 
     table = Table(title="Grades", box=box.SIMPLE)
     table.add_column("Data")
@@ -75,4 +78,3 @@ def list_grades(username: str, password: str, customer_id: str):
     console.print(table)
 
     click.echo(console.file.getvalue())
-    

@@ -9,7 +9,7 @@ class Credentials:
 
 
 @dataclass
-class Profile(object): 
+class Profile(object):
     customer_id: str
     name: str
     customer_title: str

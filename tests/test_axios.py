@@ -1,7 +1,7 @@
 from unittest.mock import patch
 
-from click.testing import CliRunner
 import pytest
+from click.testing import CliRunner
 
 from axios.cli import cli
 
@@ -13,6 +13,7 @@ def test_version():
         assert result.exit_code == 0
         assert result.output.startswith("cli, version ")
 
+
 @pytest.mark.vcr(filter_query_parameters=["txtUser", "txtPassword"])
 @pytest.mark.block_network
 def test_login():
@@ -20,7 +21,11 @@ def test_login():
     with runner.isolated_filesystem():
         result = runner.invoke(cli, ["login"])
         assert result.exit_code == 0
-        assert "Logged in as BRANCA MAURIZIO (ISTITUTO COMPRENSIVO VEROLENGO)" in result.output
+        assert (
+            "Logged in as BRANCA MAURIZIO (ISTITUTO COMPRENSIVO VEROLENGO)"
+            in result.output
+        )
+
 
 @pytest.mark.vcr(filter_query_parameters=["txtUser", "txtPassword"])
 @pytest.mark.block_network
@@ -30,6 +35,16 @@ def test_list_grades():
         result = runner.invoke(cli, ["list-grades"])
         assert result.exit_code == 0
         assert (
+            # Click's CliRunner uses a terminal width of 80 characters, so
+            # Rich will wrap the output to fit the terminal width.
+            #
+            # Don't go crazy with the indentation, just save the output in a
+            # file with something like:
+            #
+            # with open("sample.txt", "w") as f:
+            #     f.write(result.output)
+            #
+            # And then copy the output from the file in the assert.
             result.output
             == """                                     Grades                                     
                                                                                 
