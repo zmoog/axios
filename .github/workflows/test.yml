@@ -30,8 +30,3 @@ jobs:
     - name: Run tests
       run: |
         pytest
-      env:
-        AXIOS_USERNAME: 'username'
-        AXIOS_PASSWORD: 'password'
-        AXIOS_CUSTOMER_ID: '91014810013'
-
