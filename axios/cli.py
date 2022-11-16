@@ -15,48 +15,43 @@ def cli():
     "Command line utility to access https://family.axioscloud.it"
 
 
-@cli.command(name="command")
-@click.argument(
-    "example"
-)
-@click.option(
-    "-o",
-    "--option",
-    help="An example option",
-)
-def first_command(example, option):
-    "Command description goes here"
-    click.echo("Here is some output")
-
-
 @cli.command(name="login")
-def login():
+@click.option("--username", "-u", required=True, envvar="AXIOS_USERNAME")
+@click.option("--password", "-p", required=True, envvar="AXIOS_PASSWORD")
+@click.option(
+    "--customer-id", "-id", required=True, envvar="AXIOS_CUSTOMER_ID"
+)
+def login(username: str, password: str, customer_id: str):
     nav = Navigator(
         Credentials(
-            username="username", 
-            password="password",
-            customer_id="91014810013",
+            username=username, password=password, customer_id=customer_id
         )
     )
 
     profile = nav.login()
 
-    click.echo(f"Logged in as {profile.name} ({profile.customer_title} {profile.customer_name})")
+    click.echo(
+        f"Logged in as {profile.name} ({profile.customer_title} {profile.customer_name})"
+    )
 
 
 @cli.command(name="list-grades")
-def login():
+@click.option("--username", "-u", required=True, envvar="AXIOS_USERNAME")
+@click.option("--password", "-p", required=True, envvar="AXIOS_PASSWORD")
+@click.option(
+    "--customer-id", "-id", required=True, envvar="AXIOS_CUSTOMER_ID"
+)
+def list_grades(username: str, password: str, customer_id: str):
     nav = Navigator(
         Credentials(
-            username="username", 
-            password="password",
-            customer_id="91014810013",
+            username=username,
+            password=password,
+            customer_id=customer_id,
         )
     )
 
     nav.login()
     grades = nav.list_grades()
-
 
     table = Table(title="Grades", box=box.SIMPLE)
     table.add_column("Data")
@@ -83,5 +78,3 @@ def login():
     console.print(table)
 
     click.echo(console.file.getvalue())
-    
-    # click.echo(f"Logged in as {profile.name} ({profile.customer_title} {profile.customer_name})")

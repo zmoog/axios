@@ -1,7 +1,7 @@
 from setuptools import setup
 import os
 
-VERSION = "0.1"
+VERSION = "0.1.0"
 
 
 def get_long_description():
@@ -31,9 +31,20 @@ setup(
         [console_scripts]
         axios=axios.cli:cli
     """,
-    install_requires=["click", "requests", "lxml"],
+    install_requires=[
+        "click",
+        "lxml",
+        "requests",
+        "rich",
+    ],
     extras_require={
-        "test": ["pytest", "pytest-recording"]
+        "test": [
+            "black",
+            "flake8",
+            "isort",
+            "pytest",
+            "pytest-recording",
+        ]
     },
     python_requires=">=3.7",
 )

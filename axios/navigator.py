@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 from typing import Any
-from lxml import html
 
 import requests
+from lxml import html
 
 from .models import Credentials, Grade, Profile
 
@@ -22,13 +22,21 @@ class State:
     def fromtree(cls, tree: html.HtmlElement):
         return cls(
             viewstate=tree.xpath('//input[@id="__VIEWSTATE"]/@value'),
-            viewstategenerator=tree.xpath('//input[@id="__VIEWSTATEGENERATOR"]/@value'),
-            eventvalidation=tree.xpath('//input[@id="__EVENTVALIDATION"]/@value'),
+            viewstategenerator=tree.xpath(
+                '//input[@id="__VIEWSTATEGENERATOR"]/@value'
+            ),
+            eventvalidation=tree.xpath(
+                '//input[@id="__EVENTVALIDATION"]/@value'
+            ),
         )
 
 
 class Navigator:
-    def __init__(self, credentials: Credentials, session: requests.Session = requests.Session()):
+    def __init__(
+        self,
+        credentials: Credentials,
+        session: requests.Session = requests.Session(),
+    ):
         self.credentials = credentials
         self.session = session
         self.state = State()
@@ -42,9 +50,7 @@ class Navigator:
         resp = self.session.get(startUrl)
         dump_to_file("login.1.html", resp.text)
 
-        self.state = State.fromtree(
-            html.fromstring(resp.text)
-        )
+        self.state = State.fromtree(html.fromstring(resp.text))
 
         start_payload = {
             "__VIEWSTATE": self.state.viewstate,
@@ -81,7 +87,7 @@ class Navigator:
             data=login_payload,
             headers=headers_for(startUrl),
         )
-        
+
         dump_to_file("login.3.html", resp.text)
 
         tree = html.fromstring(resp.text)
@@ -134,21 +140,24 @@ class Navigator:
         rows = tree.xpath('//div[@id="votiEle"]/div/table/tbody/tr')
         grades = []
         for row in rows:
-            grades.append(Grade(
-                date=first(row.xpath("td[1]/text()")),
-                subject=first(row.xpath("td[2]/text()")),
-                kind=first(row.xpath("td[3]/text()")),
-                value=first(row.xpath("td[4]/span/text()")),
-                target=first(row.xpath("td[5]/text()")),
-                comment=first(row.xpath("td[6]/text()")),
-                teacher=first(row.xpath("td[7]/text()")),
-            ))
+            grades.append(
+                Grade(
+                    date=first(row.xpath("td[1]/text()")),
+                    subject=first(row.xpath("td[2]/text()")),
+                    kind=first(row.xpath("td[3]/text()")),
+                    value=first(row.xpath("td[4]/span/text()")),
+                    target=first(row.xpath("td[5]/text()")),
+                    comment=first(row.xpath("td[6]/text()")),
+                    teacher=first(row.xpath("td[7]/text()")),
+                )
+            )
 
         return grades
-        
+
 
 def first(sequence, defaultValue: Any = ""):
     return sequence[0] if sequence else defaultValue
+
 
 def headers_for(url: str) -> dict:
     return {
@@ -160,6 +169,7 @@ def headers_for(url: str) -> dict:
         "Upgrade-Insecure-Requests": "1",
         "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.97 Safari/537.36",
     }
+
 
 def dump_to_file(filename, data):
     with open(f"/tmp/{filename}", "w") as f:
