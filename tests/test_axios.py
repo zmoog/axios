@@ -12,6 +12,8 @@ def test_version():
         result = runner.invoke(cli, ["--version"])
         assert result.exit_code == 0
         assert result.output.startswith("cli, version ")
+    assert result.exit_code == 0, result.output
+    assert result.output.startswith("cli, version ")
 
 
 @pytest.mark.vcr(filter_query_parameters=["txtUser", "txtPassword"])
@@ -20,7 +22,7 @@ def test_login():
     runner = CliRunner()
     with runner.isolated_filesystem():
         result = runner.invoke(cli, ["login"])
-        assert result.exit_code == 0
+        assert result.exit_code == 0, result.output
         assert (
             "Logged in as BRANCA MAURIZIO (ISTITUTO COMPRENSIVO VEROLENGO)"
             in result.output
@@ -33,7 +35,7 @@ def test_list_grades():
     runner = CliRunner()
     with runner.isolated_filesystem():
         result = runner.invoke(cli, ["list-grades"])
-        assert result.exit_code == 0
+        assert result.exit_code == 0, result.output
         assert (
             # Click's CliRunner uses a terminal width of 80 characters, so
             # Rich will wrap the output to fit the terminal width.
