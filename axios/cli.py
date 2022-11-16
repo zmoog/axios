@@ -15,20 +15,6 @@ def cli():
     "Command line utility to access https://family.axioscloud.it"
 
 
-# @cli.command(name="command")
-# @click.argument(
-#     "example"
-# )
-# @click.option(
-#     "-o",
-#     "--option",
-#     help="An example option",
-# )
-# def first_command(example, option):
-#     "Command description goes here"
-#     click.echo("Here is some output")
-
-
 @cli.command(name="login")
 @click.option('--username', "-u",  required=True, envvar="AXIOS_USERNAME")
 @click.option('--password', "-p", required=True, envvar="AXIOS_PASSWORD")
@@ -90,4 +76,3 @@ def list_grades(username: str, password: str, customer_id: str):
 
     click.echo(console.file.getvalue())
     
-    # click.echo(f"Logged in as {profile.name} ({profile.customer_title} {profile.customer_name})")
