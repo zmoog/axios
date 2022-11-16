@@ -31,9 +31,17 @@ setup(
         [console_scripts]
         axios=axios.cli:cli
     """,
-    install_requires=["click", "requests", "lxml"],
+    install_requires=[
+        "click",
+        "lxml",
+        "requests",
+        "rich",
+    ],
     extras_require={
-        "test": ["pytest", "pytest-recording"]
+        "test": [
+            "pytest",
+            "pytest-recording",
+        ]
     },
     python_requires=">=3.7",
 )
