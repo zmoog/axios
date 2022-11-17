@@ -40,7 +40,7 @@ def test_login():
 def test_list_grades():
     runner = CliRunner()
     with runner.isolated_filesystem():
-        result = runner.invoke(cli, ["list-grades"], env=env)
+        result = runner.invoke(cli, ["grades", "list"], env=env)
         assert result.exit_code == 0, result.output
         assert (
             # Click's CliRunner uses a terminal width of 80 characters, so
