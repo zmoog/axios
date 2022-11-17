@@ -48,7 +48,6 @@ class Navigator:
 
         # Get the login page
         resp = self.session.get(startUrl)
-        dump_to_file("login.1.html", resp.text)
 
         self.state = State.fromtree(html.fromstring(resp.text))
 
@@ -65,7 +64,6 @@ class Navigator:
         resp = self.session.post(
             startUrl, data=start_payload, headers=headers_for(startUrl)
         )
-        dump_to_file("login.2.html", resp.text)
         tree = html.fromstring(resp.text)
         self.state = State.fromtree(tree)
 
@@ -87,8 +85,6 @@ class Navigator:
             data=login_payload,
             headers=headers_for(startUrl),
         )
-
-        dump_to_file("login.3.html", resp.text)
 
         tree = html.fromstring(resp.text)
         self.state = State.fromtree(tree)
@@ -132,7 +128,6 @@ class Navigator:
             data=payload,
             headers=headers_for(FAMILY_URL),
         )
-        dump_to_file("family.1.html", resp.text)
 
         tree = html.fromstring(resp.text)
         self.state = State.fromtree(tree)
@@ -169,8 +164,3 @@ def headers_for(url: str) -> dict:
         "Upgrade-Insecure-Requests": "1",
         "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.97 Safari/537.36",
     }
-
-
-def dump_to_file(filename, data):
-    with open(f"/tmp/{filename}", "w") as f:
-        f.write(data)
