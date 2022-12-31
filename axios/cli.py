@@ -109,7 +109,7 @@ def list_grades(ctx: Any, username: str, password: str, customer_id: str):
     table.add_column("Materia")
     table.add_column("Tipo")
     table.add_column("Voto")
-    table.add_column("Obiettivi")
+    # table.add_column("Obiettivi")
     table.add_column("Commento")
     table.add_column("Docente")
 
@@ -119,7 +119,7 @@ def list_grades(ctx: Any, username: str, password: str, customer_id: str):
             str(v.subject),
             str(v.kind),
             str(v.value),
-            str(v.target),
+            # str(v.target),
             str(v.comment),
             str(v.teacher),
         )
