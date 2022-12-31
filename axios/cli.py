@@ -1,3 +1,4 @@
+import datetime
 import io
 
 import click
@@ -7,6 +8,8 @@ from rich.table import Table
 
 from .models import Credentials
 from .navigator import Navigator
+
+today = datetime.date.today()
 
 
 @click.group()
@@ -21,10 +24,48 @@ def cli():
 @click.option(
     "--customer-id", "-id", required=True, envvar="AXIOS_CUSTOMER_ID"
 )
-def login(username: str, password: str, customer_id: str):
+@click.option("--student-id", required=True, envvar="AXIOS_STUDENT_ID")
+@click.option(
+    "--year",
+    required=True,
+    default=today.year if today.month <= 12 else today.month - 1,
+    envvar="AXIOS_STUDENT_YEAR",
+)
+@click.option(
+    "--period",
+    required=True,
+    default="FT01" if today.month <= 12 else "FT02",
+    envvar="AXIOS_STUDENT_PERIOD",
+)
+@click.version_option()
+@click.pass_context
+def cli(
+    ctx: click.Context,
+    username: str,
+    password: str,
+    customer_id: str,
+    student_id: str,
+    year: int,
+    period: str,
+):
+    "Command line utility to access https://family.axioscloud.it"
+    ctx.ensure_object(dict)
+    ctx.obj["username"] = username
+    ctx.obj["password"] = password
+    ctx.obj["customer_id"] = customer_id
+    ctx.obj["student_id"] = student_id
+    ctx.obj["year"] = year
+    ctx.obj["period"] = period
+
+
+@cli.command(name="login")
+@click.pass_context
+def login(ctx: click.Context):
     nav = Navigator(
         Credentials(
-            username=username, password=password, customer_id=customer_id
+            username=ctx.obj["username"],
+            password=ctx.obj["password"],
+            customer_id=ctx.obj["customer_id"],
         )
     )
 
@@ -46,17 +87,22 @@ def grades():
 @click.option(
     "--customer-id", "-id", required=True, envvar="AXIOS_CUSTOMER_ID"
 )
-def list_grades(username: str, password: str, customer_id: str):
+@click.pass_context
+def list_grades(ctx: Any, username: str, password: str, customer_id: str):
     nav = Navigator(
         Credentials(
-            username=username,
-            password=password,
-            customer_id=customer_id,
+            username=ctx.obj["username"],
+            password=ctx.obj["password"],
+            customer_id=ctx.obj["customer_id"],
         )
     )
 
     nav.login()
-    _grades = nav.list_grades()
+    _grades = nav.list_grades(
+        student_id=ctx.obj["student_id"],
+        year=ctx.obj["year"],
+        period=ctx.obj["period"],
+    )
 
     table = Table(title="Grades", box=box.SIMPLE)
     table.add_column("Data")

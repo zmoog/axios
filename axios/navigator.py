@@ -1,5 +1,6 @@
 from dataclasses import dataclass
-from typing import Any, Union
+from datetime import date
+from typing import Any, List, Union
 
 import requests
 from lxml import html
@@ -113,8 +114,10 @@ class Navigator:
             customer_name[0].text,
         )
 
-    def list_grades(self):
-        """List the grades for the logged-in user."""
+    def list_grades(
+        self, student_id: str, year: int, period: str
+    ) -> List[Grade]:
+        """List the grades for the logged in user."""
 
         payload = {
             "__LASTFOCUS": "",
@@ -123,11 +126,11 @@ class Navigator:
             "__VIEWSTATE": self.state.viewstate,
             "__VIEWSTATEGENERATOR": self.state.viewstategenerator,
             "__EVENTVALIDATION": self.state.eventvalidation,
-            "ctl00$ContentPlaceHolderMenu$ddlAnno": "2022",
-            "ctl00$ContentPlaceHolderMenu$ddlFT": "FT01",
+            "ctl00$ContentPlaceHolderMenu$ddlAnno": year,
+            "ctl00$ContentPlaceHolderMenu$ddlFT": period,
             "ctl00$ContentPlaceHolderBody$txtDataSelezionataCAL": "13/11/2022",  # FIXME: replace with today's date
             "ctl00$ContentPlaceHolderBody$txtFunctionSelected": "nothing",
-            "ctl00$ContentPlaceHolderBody$txtAluSelected": "00002401",  # ????
+            "ctl00$ContentPlaceHolderBody$txtAluSelected": student_id,
             "ctl00$ContentPlaceHolderBody$txtIDAluSelected": "0",
         }
 
