@@ -14,6 +14,7 @@ from .navigator import Navigator
 def cli():
     "Command line utility to access https://family.axioscloud.it"
 
+
 @cli.command(name="login")
 @click.option("--username", "-u", required=True, envvar="AXIOS_USERNAME")
 @click.option("--password", "-p", required=True, envvar="AXIOS_PASSWORD")
@@ -33,9 +34,11 @@ def login(username: str, password: str, customer_id: str):
         f"Logged in as {profile.name} ({profile.customer_title} {profile.customer_name})"
     )
 
+
 @cli.group()
 def grades():
     pass
+
 
 @grades.command()
 @click.option("--username", "-u", required=True, envvar="AXIOS_USERNAME")

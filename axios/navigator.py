@@ -35,7 +35,7 @@ class Navigator:
     def __init__(
         self,
         credentials: Credentials,
-        session: requests.Session = requests.Session(),
+        session: requests.Session = requests.Session(),  # noqa: B008
     ):
         self.credentials = credentials
         self.session = session

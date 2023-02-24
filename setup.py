@@ -40,10 +40,10 @@ setup(
     extras_require={
         "test": [
             "black",
-            "flake8",
             "isort",
             "pytest",
             "pytest-recording",
+            "ruff",
         ]
     },
     python_requires=">=3.7",
