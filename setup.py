@@ -52,5 +52,5 @@ setup(
             "types-setuptools",
         ]
     },
-    python_requires=">=3.7",
+    python_requires=">=3.8",
 )
