@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Union
 
 import requests
 from lxml import html
@@ -19,7 +19,15 @@ class State:
     eventvalidation: str = ""
 
     @classmethod
-    def fromtree(cls, tree: html.HtmlElement):
+    def fromtree(
+        cls,
+        tree: Union[
+            html.HtmlComment,
+            html.HtmlElement,
+            html.HtmlEntity,
+            html.HtmlProcessingInstruction,
+        ],
+    ):
         return cls(
             viewstate=tree.xpath('//input[@id="__VIEWSTATE"]/@value'),
             viewstategenerator=tree.xpath(
@@ -44,10 +52,10 @@ class Navigator:
     def login(self) -> Profile:
         """Login to the Axios Family web application."""
 
-        startUrl = START_URL + self.credentials.customer_id
+        start_url = START_URL + self.credentials.customer_id
 
         # Get the login page
-        resp = self.session.get(startUrl)
+        resp = self.session.get(start_url)
 
         self.state = State.fromtree(html.fromstring(resp.text))
 
@@ -62,7 +70,7 @@ class Navigator:
 
         # I don't know why we need to do this is, but it's required
         resp = self.session.post(
-            startUrl, data=start_payload, headers=headers_for(startUrl)
+            start_url, data=start_payload, headers=headers_for(start_url)
         )
         tree = html.fromstring(resp.text)
         self.state = State.fromtree(tree)
@@ -83,7 +91,7 @@ class Navigator:
         resp = self.session.post(
             "https://family.axioscloud.it/Secret/RELogin.aspx",
             data=login_payload,
-            headers=headers_for(startUrl),
+            headers=headers_for(start_url),
         )
 
         tree = html.fromstring(resp.text)

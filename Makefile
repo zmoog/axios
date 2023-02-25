@@ -24,7 +24,10 @@ fix-black:
 fix-isort:
 	@isort ${isort_options}
 
-test:
-	pytest tests
+type-check:  ## Type check the project on the host
+	mypy axios tests
 
-ready: lint test ## Make sure we're ready to ship the code in a PR
+test:
+	pytest tests -vv
+
+ready: lint type-check test ## Make sure we're ready to ship the code in a PR

@@ -41,9 +41,15 @@ setup(
         "test": [
             "black",
             "isort",
+            "mypy",
             "pytest",
             "pytest-recording",
             "ruff",
+            "types-colorama",
+            "types-lxml",
+            "types-Pygments",
+            "types-requests",
+            "types-setuptools",
         ]
     },
     python_requires=">=3.7",

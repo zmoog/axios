@@ -12,7 +12,7 @@ from .navigator import Navigator
 @click.group()
 @click.version_option()
 def cli():
-    "Command line utility to access https://family.axioscloud.it"
+    """Command line utility to access https://family.axioscloud.it"""
 
 
 @cli.command(name="login")
@@ -40,13 +40,13 @@ def grades():
     pass
 
 
-@grades.command()
+@grades.command(name="list")
 @click.option("--username", "-u", required=True, envvar="AXIOS_USERNAME")
 @click.option("--password", "-p", required=True, envvar="AXIOS_PASSWORD")
 @click.option(
     "--customer-id", "-id", required=True, envvar="AXIOS_CUSTOMER_ID"
 )
-def list(username: str, password: str, customer_id: str):
+def list_grades(username: str, password: str, customer_id: str):
     nav = Navigator(
         Credentials(
             username=username,
@@ -56,7 +56,7 @@ def list(username: str, password: str, customer_id: str):
     )
 
     nav.login()
-    grades = nav.list_grades()
+    _grades = nav.list_grades()
 
     table = Table(title="Grades", box=box.SIMPLE)
     table.add_column("Data")
@@ -67,7 +67,7 @@ def list(username: str, password: str, customer_id: str):
     table.add_column("Commento")
     table.add_column("Docente")
 
-    for v in grades:
+    for v in _grades:
         table.add_row(
             str(v.date),
             str(v.subject),
@@ -78,8 +78,11 @@ def list(username: str, password: str, customer_id: str):
             str(v.teacher),
         )
 
+    # we capture the output into this variable
+    output = io.StringIO()
+
     # turn table into a string using the Console
-    console = Console(file=io.StringIO())
+    console = Console(file=output)
     console.print(table)
 
-    click.echo(console.file.getvalue())
+    click.echo(output.getvalue())
