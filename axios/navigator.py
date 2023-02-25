@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Union
 
 import requests
 from lxml import html
@@ -19,7 +19,15 @@ class State:
     eventvalidation: str = ""
 
     @classmethod
-    def fromtree(cls, tree: html.HtmlElement):
+    def fromtree(
+        cls,
+        tree: Union[
+            html.HtmlComment,
+            html.HtmlElement,
+            html.HtmlEntity,
+            html.HtmlProcessingInstruction,
+        ],
+    ):
         return cls(
             viewstate=tree.xpath('//input[@id="__VIEWSTATE"]/@value'),
             viewstategenerator=tree.xpath(
@@ -35,7 +43,7 @@ class Navigator:
     def __init__(
         self,
         credentials: Credentials,
-        session: requests.Session = requests.Session(),
+        session: requests.Session = requests.Session(),  # noqa: B008
     ):
         self.credentials = credentials
         self.session = session
@@ -44,10 +52,10 @@ class Navigator:
     def login(self) -> Profile:
         """Login to the Axios Family web application."""
 
-        startUrl = START_URL + self.credentials.customer_id
+        start_url = START_URL + self.credentials.customer_id
 
         # Get the login page
-        resp = self.session.get(startUrl)
+        resp = self.session.get(start_url)
 
         self.state = State.fromtree(html.fromstring(resp.text))
 
@@ -62,7 +70,7 @@ class Navigator:
 
         # I don't know why we need to do this is, but it's required
         resp = self.session.post(
-            startUrl, data=start_payload, headers=headers_for(startUrl)
+            start_url, data=start_payload, headers=headers_for(start_url)
         )
         tree = html.fromstring(resp.text)
         self.state = State.fromtree(tree)
@@ -83,13 +91,13 @@ class Navigator:
         resp = self.session.post(
             "https://family.axioscloud.it/Secret/RELogin.aspx",
             data=login_payload,
-            headers=headers_for(startUrl),
+            headers=headers_for(start_url),
         )
 
         tree = html.fromstring(resp.text)
         self.state = State.fromtree(tree)
 
-        # look for the user name in the page, if it's not there,
+        # look for the username in the page, if it's not there,
         # we're not logged in
         name = tree.xpath('//span[@id="lblUserName"]')
         if not name:
@@ -106,7 +114,7 @@ class Navigator:
         )
 
     def list_grades(self):
-        """List the grades for the logged in user."""
+        """List the grades for the logged-in user."""
 
         payload = {
             "__LASTFOCUS": "",
@@ -150,11 +158,13 @@ class Navigator:
         return grades
 
 
-def first(sequence, defaultValue: Any = ""):
-    return sequence[0] if sequence else defaultValue
+def first(sequence, default_value: Any = ""):
+    """Return the first element of a sequence, or a default value if the sequence is empty"""
+    return sequence[0] if sequence else default_value
 
 
 def headers_for(url: str) -> dict:
+    """Return the headers to use for a request to the given URL"""
     return {
         "Content-Type": "application/x-www-form-urlencoded",
         "Origin": "https://family.axioscloud.it",
@@ -162,5 +172,5 @@ def headers_for(url: str) -> dict:
         "Sec-Fetch-Mode": "navigate",
         "Sec-Fetch-Site": "none",
         "Upgrade-Insecure-Requests": "1",
-        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.97 Safari/537.36",
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.97 Safari/537.36",  # noqa: E501
     }

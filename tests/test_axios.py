@@ -1,16 +1,14 @@
-from unittest.mock import patch
-
 import pytest
 from click.testing import CliRunner
 
 from axios.cli import cli
-
 
 env = {
     "AXIOS_USERNAME": "username",
     "AXIOS_PASSWORD": "password",
     "AXIOS_CUSTOMER_ID": "91014810013",
 }
+
 
 def test_version():
     runner = CliRunner()

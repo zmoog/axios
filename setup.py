@@ -40,11 +40,17 @@ setup(
     extras_require={
         "test": [
             "black",
-            "flake8",
             "isort",
+            "mypy",
             "pytest",
             "pytest-recording",
+            "ruff",
+            "types-colorama",
+            "types-lxml",
+            "types-Pygments",
+            "types-requests",
+            "types-setuptools",
         ]
     },
-    python_requires=">=3.7",
+    python_requires=">=3.8",
 )
