@@ -97,7 +97,7 @@ class Navigator:
         tree = html.fromstring(resp.text)
         self.state = State.fromtree(tree)
 
-        # look for the user name in the page, if it's not there,
+        # look for the username in the page, if it's not there,
         # we're not logged in
         name = tree.xpath('//span[@id="lblUserName"]')
         if not name:
@@ -114,7 +114,7 @@ class Navigator:
         )
 
     def list_grades(self):
-        """List the grades for the logged in user."""
+        """List the grades for the logged-in user."""
 
         payload = {
             "__LASTFOCUS": "",
@@ -158,11 +158,13 @@ class Navigator:
         return grades
 
 
-def first(sequence, defaultValue: Any = ""):
-    return sequence[0] if sequence else defaultValue
+def first(sequence, default_value: Any = ""):
+    """Return the first element of a sequence, or a default value if the sequence is empty"""
+    return sequence[0] if sequence else default_value
 
 
 def headers_for(url: str) -> dict:
+    """Return the headers to use for a request to the given URL"""
     return {
         "Content-Type": "application/x-www-form-urlencoded",
         "Origin": "https://family.axioscloud.it",
@@ -170,5 +172,5 @@ def headers_for(url: str) -> dict:
         "Sec-Fetch-Mode": "navigate",
         "Sec-Fetch-Site": "none",
         "Upgrade-Insecure-Requests": "1",
-        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.97 Safari/537.36",
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.97 Safari/537.36",  # noqa: E501
     }
