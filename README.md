@@ -22,6 +22,7 @@ First, set the environment variables:
     export AXIOS_CUSTOMER_ID="12345678909"
     export AXIOS_USERNAME="1234"
     export AXIOS_PASSWORD="a-secret-i-will-not-share"
+    export AXIOS_STUDENT_ID="4567"
 
 To list latest grades, run:
 
@@ -42,6 +43,16 @@ To list latest grades, run:
       16/11/2022   TECNOLOGIA e INFORMATICA     Grafico   7                                                                                                          Pavarin Maria Luisa
       10/11/2022   ARTE E IMMAGINE              Grafico   8                  Poster per la pace                                                                      Pagliarulo Veronica
       09/11/2022   LINGUA STRANIERA INGLESE     Scritto   8,5                Test units 1 e 2                                                                        Barbero Daniela
+
+Defaults to current year and period.
+
+To select a differnt year or period, run:
+
+    axios --period FT02 grades list  # allowed valuesL FT01 and FT02
+
+    axios --year 2021 grades list  # the year classes started
+    
+    axios --year 2021 --period FT01  # you can combine them, of course
 
 For help, run:
 
