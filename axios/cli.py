@@ -28,7 +28,7 @@ today = datetime.date.today()
 @click.option(
     "--period",
     required=True,
-    default="FT01" if today.month <= 12 else "FT02",
+    default="FT01" if today.month in [1, 9, 10, 11, 12] else "FT02",
     envvar="AXIOS_STUDENT_PERIOD",
 )
 @click.option(
