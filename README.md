@@ -46,13 +46,16 @@ To list latest grades, run:
 
 Defaults to current year and period.
 
-To select a differnt year or period, run:
+To select a different year or period, run:
 
-    axios --period FT02 grades list  # allowed valuesL FT01 and FT02
+    # allowed values: FT01 and FT02
+    axios --period FT02 grades list 
 
-    axios --year 2021 grades list  # the year classes started
+    # the year classes started
+    axios --year 2021 grades list 
     
-    axios --year 2021 --period FT01  # you can combine them, of course
+    # you can combine them, of course
+    axios --year 2021 --period FT01
 
 For help, run:
 
