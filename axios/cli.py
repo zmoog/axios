@@ -13,12 +13,6 @@ today = datetime.date.today()
 
 
 @click.group()
-@click.version_option()
-def cli():
-    """Command line utility to access https://family.axioscloud.it"""
-
-
-@cli.command(name="login")
 @click.option("--username", "-u", required=True, envvar="AXIOS_USERNAME")
 @click.option("--password", "-p", required=True, envvar="AXIOS_PASSWORD")
 @click.option(
@@ -28,7 +22,7 @@ def cli():
 @click.option(
     "--year",
     required=True,
-    default=today.year if today.month <= 12 else today.month - 1,
+    default=today.year if 9 <= today.month <= 12 else today.year - 1,
     envvar="AXIOS_STUDENT_YEAR",
 )
 @click.option(
@@ -36,6 +30,14 @@ def cli():
     required=True,
     default="FT01" if today.month <= 12 else "FT02",
     envvar="AXIOS_STUDENT_PERIOD",
+)
+@click.option(
+    "-v",
+    "--verbose",
+    is_flag=True,
+    help="Enables verbose mode",
+    default=False,
+    envvar="AXIOS_VERBOSE",
 )
 @click.version_option()
 @click.pass_context
@@ -47,8 +49,9 @@ def cli(
     student_id: str,
     year: int,
     period: str,
+    verbose: bool,
 ):
-    "Command line utility to access https://family.axioscloud.it"
+    """Command line utility to access https://family.axioscloud.it"""
     ctx.ensure_object(dict)
     ctx.obj["username"] = username
     ctx.obj["password"] = password
@@ -56,6 +59,7 @@ def cli(
     ctx.obj["student_id"] = student_id
     ctx.obj["year"] = year
     ctx.obj["period"] = period
+    ctx.obj["verbose"] = verbose
 
 
 @cli.command(name="login")
@@ -66,7 +70,8 @@ def login(ctx: click.Context):
             username=ctx.obj["username"],
             password=ctx.obj["password"],
             customer_id=ctx.obj["customer_id"],
-        )
+        ),
+        student_id=ctx.obj["student_id"],
     )
 
     profile = nav.login()
@@ -82,27 +87,22 @@ def grades():
 
 
 @grades.command(name="list")
-@click.option("--username", "-u", required=True, envvar="AXIOS_USERNAME")
-@click.option("--password", "-p", required=True, envvar="AXIOS_PASSWORD")
-@click.option(
-    "--customer-id", "-id", required=True, envvar="AXIOS_CUSTOMER_ID"
-)
 @click.pass_context
-def list_grades(ctx: Any, username: str, password: str, customer_id: str):
+def list_grades(ctx: click.Context):
     nav = Navigator(
         Credentials(
             username=ctx.obj["username"],
             password=ctx.obj["password"],
             customer_id=ctx.obj["customer_id"],
-        )
+        ),
+        student_id=ctx.obj["student_id"],
     )
 
     nav.login()
-    _grades = nav.list_grades(
-        student_id=ctx.obj["student_id"],
-        year=ctx.obj["year"],
-        period=ctx.obj["period"],
-    )
+    nav.select_year(ctx.obj["year"])
+    nav.select_period(ctx.obj["period"])
+
+    _grades = nav.list_grades()
 
     table = Table(title="Grades", box=box.SIMPLE)
     table.add_column("Data")

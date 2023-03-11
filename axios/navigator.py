@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from datetime import date
-from typing import Any, List, Union
+from typing import Any, List
 
 import requests
 from lxml import html
@@ -10,55 +10,58 @@ from .models import Credentials, Grade, Profile
 START_URL = "https://family.axioscloud.it/Secret/REStart.aspx?Customer_ID="
 FAMILY_URL = "https://family.axioscloud.it/Secret/REFamily.aspx"
 
+today = date.today()
+
 
 @dataclass
 class State:
     """State in an ASP.NET web application."""
 
+    year: int
+    period: str
+    student_id: str
+
     viewstate: str = ""
     viewstategenerator: str = ""
     eventvalidation: str = ""
 
-    @classmethod
-    def fromtree(
-        cls,
-        tree: Union[
-            html.HtmlComment,
-            html.HtmlElement,
-            html.HtmlEntity,
-            html.HtmlProcessingInstruction,
-        ],
-    ):
-        return cls(
-            viewstate=tree.xpath('//input[@id="__VIEWSTATE"]/@value'),
-            viewstategenerator=tree.xpath(
-                '//input[@id="__VIEWSTATEGENERATOR"]/@value'
-            ),
-            eventvalidation=tree.xpath(
-                '//input[@id="__EVENTVALIDATION"]/@value'
-            ),
+    def update_from(self, tree: html.HtmlElement):
+        """Merge the state from a new tree."""
+        self.viewstate = tree.xpath('//input[@id="__VIEWSTATE"]/@value')
+        self.viewstategenerator = tree.xpath(
+            '//input[@id="__VIEWSTATEGENERATOR"]/@value'
+        )
+        self.eventvalidation = tree.xpath(
+            '//input[@id="__EVENTVALIDATION"]/@value'
         )
 
-
 class Navigator:
+    """Navigator for the Axios Family web application."""
+
     def __init__(
         self,
         credentials: Credentials,
-        session: requests.Session = requests.Session(),  # noqa: B008
+        student_id: str,
+        session: requests.Session = requests.Session(),
+        verbose: bool = False,
     ):
         self.credentials = credentials
+        self.state = State(
+            year=today.year if 9 <= today.month <= 12 else today.year - 1,
+            period="FT01" if 9 < today.month < 2 else "FT02",
+            student_id=student_id,
+        )
         self.session = session
-        self.state = State()
+        self.verbose = verbose
 
     def login(self) -> Profile:
         """Login to the Axios Family web application."""
 
-        start_url = START_URL + self.credentials.customer_id
+        startUrl = START_URL + self.credentials.customer_id
 
         # Get the login page
-        resp = self.session.get(start_url)
-
-        self.state = State.fromtree(html.fromstring(resp.text))
+        resp = self.session.get(startUrl)
+        self.state.update_from(html.fromstring(resp.text))
 
         start_payload = {
             "__VIEWSTATE": self.state.viewstate,
@@ -71,10 +74,10 @@ class Navigator:
 
         # I don't know why we need to do this is, but it's required
         resp = self.session.post(
-            start_url, data=start_payload, headers=headers_for(start_url)
+            startUrl, data=start_payload, headers=headers_for(startUrl)
         )
         tree = html.fromstring(resp.text)
-        self.state = State.fromtree(tree)
+        self.state.update_from(tree)
 
         login_payload = {
             "__LASTFOCUS": "",
@@ -92,13 +95,13 @@ class Navigator:
         resp = self.session.post(
             "https://family.axioscloud.it/Secret/RELogin.aspx",
             data=login_payload,
-            headers=headers_for(start_url),
+            headers=headers_for(startUrl),
         )
 
         tree = html.fromstring(resp.text)
-        self.state = State.fromtree(tree)
+        self.state.update_from(tree)
 
-        # look for the username in the page, if it's not there,
+        # look for the user name in the page, if it's not there,
         # we're not logged in
         name = tree.xpath('//span[@id="lblUserName"]')
         if not name:
@@ -114,10 +117,8 @@ class Navigator:
             customer_name[0].text,
         )
 
-    def list_grades(
-        self, student_id: str, year: int, period: str
-    ) -> List[Grade]:
-        """List the grades for the logged in user."""
+    def list_grades(self) -> List[Grade]:
+        """List the grades for the logged-in user."""
 
         payload = {
             "__LASTFOCUS": "",
@@ -126,13 +127,18 @@ class Navigator:
             "__VIEWSTATE": self.state.viewstate,
             "__VIEWSTATEGENERATOR": self.state.viewstategenerator,
             "__EVENTVALIDATION": self.state.eventvalidation,
-            "ctl00$ContentPlaceHolderMenu$ddlAnno": year,
-            "ctl00$ContentPlaceHolderMenu$ddlFT": period,
-            "ctl00$ContentPlaceHolderBody$txtDataSelezionataCAL": "13/11/2022",  # FIXME: replace with today's date
+            "ctl00$ContentPlaceHolderMenu$ddlAnno": self.state.year,
+            "ctl00$ContentPlaceHolderMenu$ddlFT": self.state.period,
+            "ctl00$ContentPlaceHolderBody$txtDataSelezionataCAL": today.strftime(
+                "%d/%m/%Y"
+            ),
             "ctl00$ContentPlaceHolderBody$txtFunctionSelected": "nothing",
-            "ctl00$ContentPlaceHolderBody$txtAluSelected": student_id,
+            "ctl00$ContentPlaceHolderBody$txtAluSelected": self.state.student_id,
             "ctl00$ContentPlaceHolderBody$txtIDAluSelected": "0",
         }
+
+        if self.verbose:
+            print(payload)
 
         resp = self.session.post(
             FAMILY_URL,
@@ -141,7 +147,7 @@ class Navigator:
         )
 
         tree = html.fromstring(resp.text)
-        self.state = State.fromtree(tree)
+        self.state.update_from(tree)
 
         rows = tree.xpath('//div[@id="votiEle"]/div/table/tbody/tr')
         grades = []
@@ -160,14 +166,87 @@ class Navigator:
 
         return grades
 
+    def select_student(self, student_id: str) -> None:
+        """Select the student"""
+        self.state.student_id = student_id
+
+    def select_year(self, year: int, day=date.today()) -> None:
+        """Select the year"""
+
+        if self.state.year == year:
+            if self.verbose:
+                print(
+                    "optimization: year is unchanged, we can avoid making a network call"
+                )
+            return
+
+        self.state.year = year
+
+        payload = {
+            "__LASTFOCUS": "",
+            "__EVENTTARGET": "ctl00$ContentPlaceHolderMenu$ddlAnno",
+            "__EVENTARGUMENT": "",
+            "__VIEWSTATE": self.state.viewstate,
+            "__VIEWSTATEGENERATOR": self.state.viewstategenerator,
+            "__EVENTVALIDATION": self.state.eventvalidation,
+            "ctl00$ContentPlaceHolderMenu$ddlAnno": self.state.year,
+            "ctl00$ContentPlaceHolderMenu$ddlFT": self.state.period,
+            "ctl00$ContentPlaceHolderBody$txtDataSelezionataCAL": day.strftime(
+                "%d/%m/%Y"
+            ),
+            "ctl00$ContentPlaceHolderBody$txtFunctionSelected": "nothing",
+            "ctl00$ContentPlaceHolderBody$txtAluSelected": self.state.student_id,
+            "ctl00$ContentPlaceHolderBody$txtIDAluSelected": "0",
+        }
+
+        resp = self.session.post(
+            FAMILY_URL,
+            data=payload,
+            headers=headers_for(FAMILY_URL),
+        )
+
+        tree = html.fromstring(resp.text)
+        self.state.update_from(tree)
+
+    def select_period(self, period: str) -> None:
+        """Select the period"""
+
+        if self.verbose:
+            print("select_period", period)
+        self.state.period = period
+
+        payload = {
+            "__LASTFOCUS": "",
+            "__EVENTTARGET": "ctl00$ContentPlaceHolderMenu$ddlFT",
+            "__EVENTARGUMENT": "",
+            "__VIEWSTATE": self.state.viewstate,
+            "__VIEWSTATEGENERATOR": self.state.viewstategenerator,
+            "__EVENTVALIDATION": self.state.eventvalidation,
+            "ctl00$ContentPlaceHolderMenu$ddlAnno": self.state.year,
+            "ctl00$ContentPlaceHolderMenu$ddlFT": self.state.period,
+            "ctl00$ContentPlaceHolderBody$txtDataSelezionataCAL": today.strftime(
+                "%d/%m/%Y"
+            ),
+            "ctl00$ContentPlaceHolderBody$txtFunctionSelected": "nothing",
+            "ctl00$ContentPlaceHolderBody$txtAluSelected": self.state.student_id,
+            "ctl00$ContentPlaceHolderBody$txtIDAluSelected": "0",
+        }
+
+        resp = self.session.post(
+            FAMILY_URL,
+            data=payload,
+            headers=headers_for(FAMILY_URL),
+        )
+
+        tree = html.fromstring(resp.text)
+        self.state.update_from(tree)
+
 
 def first(sequence, default_value: Any = ""):
-    """Return the first element of a sequence, or a default value if the sequence is empty"""
     return sequence[0] if sequence else default_value
 
 
 def headers_for(url: str) -> dict:
-    """Return the headers to use for a request to the given URL"""
     return {
         "Content-Type": "application/x-www-form-urlencoded",
         "Origin": "https://family.axioscloud.it",
@@ -175,5 +254,5 @@ def headers_for(url: str) -> dict:
         "Sec-Fetch-Mode": "navigate",
         "Sec-Fetch-Site": "none",
         "Upgrade-Insecure-Requests": "1",
-        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.97 Safari/537.36",  # noqa: E501
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.97 Safari/537.36",
     }
