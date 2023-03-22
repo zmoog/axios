@@ -1,12 +1,25 @@
+import dataclasses
 import io
-from typing import List
+import json
+from typing import Any, List
 
-import click
 from rich import box
 from rich.console import Console
 from rich.table import Table
 
 from .models import Grade
+
+
+def render(result: Any, format: str = "text") -> str:
+    """Render the result in the specified format."""
+    if format == "text":
+        return str(result)
+    elif format == "json":
+        return result.json()
+    elif format == "ndjson":
+        return result.ndjson()
+    else:
+        raise ValueError("Unknown format: " + format)
 
 
 class GradesListResult:
@@ -42,9 +55,8 @@ class GradesListResult:
 
         return output.getvalue()
 
-
     def json(self) -> str:
-        pass
+        return json.dumps([g.__dict__ for g in self.grades])
 
     def ndjson(self) -> str:
-        pass
+        return "\n".join([json.dumps(g.__dict__) for g in self.grades])

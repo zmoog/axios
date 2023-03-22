@@ -1,14 +1,10 @@
 import datetime
-import io
 
 import click
-from rich import box
-from rich.console import Console
-from rich.table import Table
 
 from .models import Credentials
 from .navigator import Navigator
-from .result import GradesListResult
+from .result import GradesListResult, render
 
 today = datetime.date.today()
 
@@ -33,6 +29,12 @@ today = datetime.date.today()
     envvar="AXIOS_STUDENT_PERIOD",
 )
 @click.option(
+    "--format",
+    type=click.Choice(['json', 'ndjson', 'text'],
+    case_sensitive=False),
+    default="text",
+)
+@click.option(
     "-v",
     "--verbose",
     is_flag=True,
@@ -50,6 +52,7 @@ def cli(
     student_id: str,
     year: int,
     period: str,
+    format: str,
     verbose: bool,
 ):
     """Command line utility to access https://family.axioscloud.it"""
@@ -60,6 +63,7 @@ def cli(
     ctx.obj["student_id"] = student_id
     ctx.obj["year"] = year
     ctx.obj["period"] = period
+    ctx.obj["format"] = format
     ctx.obj["verbose"] = verbose
 
 
@@ -103,35 +107,9 @@ def list_grades(ctx: click.Context):
     nav.select_year(ctx.obj["year"])
     nav.select_period(ctx.obj["period"])
 
-    click.echo(GradesListResult(nav.list_grades()))
-
-    # _grades = nav.list_grades()
-
-    # table = Table(title="Grades", box=box.SIMPLE)
-    # table.add_column("Data")
-    # table.add_column("Materia")
-    # table.add_column("Tipo")
-    # table.add_column("Voto")
-    # # table.add_column("Obiettivi")
-    # table.add_column("Commento")
-    # table.add_column("Docente")
-
-    # for v in _grades:
-    #     table.add_row(
-    #         str(v.date),
-    #         str(v.subject),
-    #         str(v.kind),
-    #         str(v.value),
-    #         # str(v.target),
-    #         str(v.comment),
-    #         str(v.teacher),
-    #     )
-
-    # # we capture the output into this variable
-    # output = io.StringIO()
-
-    # # turn table into a string using the Console
-    # console = Console(file=output)
-    # console.print(table)
-
-    # click.echo(output.getvalue())
+    click.echo(
+        render(
+            GradesListResult(nav.list_grades()),
+            format=ctx.obj["format"],
+        )
+    )
