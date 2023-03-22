@@ -8,6 +8,7 @@ from rich.table import Table
 
 from .models import Credentials
 from .navigator import Navigator
+from .result import GradesListResult
 
 today = datetime.date.today()
 
@@ -102,33 +103,35 @@ def list_grades(ctx: click.Context):
     nav.select_year(ctx.obj["year"])
     nav.select_period(ctx.obj["period"])
 
-    _grades = nav.list_grades()
+    click.echo(GradesListResult(nav.list_grades()))
 
-    table = Table(title="Grades", box=box.SIMPLE)
-    table.add_column("Data")
-    table.add_column("Materia")
-    table.add_column("Tipo")
-    table.add_column("Voto")
-    # table.add_column("Obiettivi")
-    table.add_column("Commento")
-    table.add_column("Docente")
+    # _grades = nav.list_grades()
 
-    for v in _grades:
-        table.add_row(
-            str(v.date),
-            str(v.subject),
-            str(v.kind),
-            str(v.value),
-            # str(v.target),
-            str(v.comment),
-            str(v.teacher),
-        )
+    # table = Table(title="Grades", box=box.SIMPLE)
+    # table.add_column("Data")
+    # table.add_column("Materia")
+    # table.add_column("Tipo")
+    # table.add_column("Voto")
+    # # table.add_column("Obiettivi")
+    # table.add_column("Commento")
+    # table.add_column("Docente")
 
-    # we capture the output into this variable
-    output = io.StringIO()
+    # for v in _grades:
+    #     table.add_row(
+    #         str(v.date),
+    #         str(v.subject),
+    #         str(v.kind),
+    #         str(v.value),
+    #         # str(v.target),
+    #         str(v.comment),
+    #         str(v.teacher),
+    #     )
 
-    # turn table into a string using the Console
-    console = Console(file=output)
-    console.print(table)
+    # # we capture the output into this variable
+    # output = io.StringIO()
 
-    click.echo(output.getvalue())
+    # # turn table into a string using the Console
+    # console = Console(file=output)
+    # console.print(table)
+
+    # click.echo(output.getvalue())
