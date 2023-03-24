@@ -57,6 +57,32 @@ To select a different year or period, run:
     # you can combine them, of course
     axios --year 2021 --period FT01
 
+To format the output in JSON or JDJSON, run:
+
+    $ axios --output-format json grades list
+    [
+        {
+            "date": "23/03/2023",
+            "subject": "ARTE E IMMAGINE",
+            "kind": "Grafico",
+            "value": "9",
+            "teacher": "Pagliarulo Veronica",
+            "comment": "Concorso LAV"
+        },
+        {
+            "date": "20/03/2023",
+            "subject": "STORIA",
+            "kind": "Orale",
+            "value": "10",
+            "teacher": "Novelli Cristina",
+            "comment": ""
+        }
+    ]
+
+    $ axios --output-format ndjson grades list
+    {"date": "23/03/2023", "subject": "ARTE E IMMAGINE", "kind": "Grafico", "value": "9", "teacher": "Pagliarulo Veronica", "comment": "Concorso LAV"}
+    {"date": "20/03/2023", "subject": "STORIA", "kind": "Orale", "value": "10", "teacher": "Novelli Cristina", "comment": ""}
+
 For help, run:
 
     axios --help

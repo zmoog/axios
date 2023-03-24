@@ -35,6 +35,7 @@ class State:
             '//input[@id="__EVENTVALIDATION"]/@value'
         )
 
+
 class Navigator:
     """Navigator for the Axios Family web application."""
 
@@ -57,10 +58,10 @@ class Navigator:
     def login(self) -> Profile:
         """Login to the Axios Family web application."""
 
-        startUrl = START_URL + self.credentials.customer_id
+        start_url = START_URL + self.credentials.customer_id
 
         # Get the login page
-        resp = self.session.get(startUrl)
+        resp = self.session.get(start_url)
         self.state.update_from(html.fromstring(resp.text))
 
         start_payload = {
@@ -74,7 +75,7 @@ class Navigator:
 
         # I don't know why we need to do this is, but it's required
         resp = self.session.post(
-            startUrl, data=start_payload, headers=headers_for(startUrl)
+            start_url, data=start_payload, headers=headers_for(start_url)
         )
         tree = html.fromstring(resp.text)
         self.state.update_from(tree)
@@ -95,7 +96,7 @@ class Navigator:
         resp = self.session.post(
             "https://family.axioscloud.it/Secret/RELogin.aspx",
             data=login_payload,
-            headers=headers_for(startUrl),
+            headers=headers_for(start_url),
         )
 
         tree = html.fromstring(resp.text)
@@ -158,7 +159,7 @@ class Navigator:
                     subject=first(row.xpath("td[2]/text()")),
                     kind=first(row.xpath("td[3]/text()")),
                     value=first(row.xpath("td[4]/span/text()")),
-                    target=first(row.xpath("td[5]/text()")),
+                    # target=first(row.xpath("td[5]/text()")),
                     comment=first(row.xpath("td[6]/text()")),
                     teacher=first(row.xpath("td[7]/text()")),
                 )

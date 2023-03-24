@@ -23,5 +23,4 @@ class Grade(object):
     kind: str
     value: str
     teacher: str
-    target: str = ""
     comment: str = ""
