@@ -5,7 +5,7 @@ from axios.cli import cli
 
 env = {
     "AXIOS_USERNAME": "user1234",
-    "AXIOS_PASSWORD": "password1234",
+    "AXIOS_PASSWORD": "user1234",
     "AXIOS_CUSTOMER_ID": "91014810013",
     "AXIOS_STUDENT_ID": "00001234",
 }
@@ -236,3 +236,48 @@ def test_list_grades():
 
 """
         )
+
+
+@pytest.mark.vcr(filter_query_parameters=["txtUser", "txtPassword"])
+@pytest.mark.block_network
+def test_grades_list_json():
+    runner = CliRunner()
+    with runner.isolated_filesystem():
+        result = runner.invoke(cli, ["--output-format", "json", "grades", "list"], env=env)
+        with open("/tmp/sample.txt", "w") as f:
+            f.write(result.output)
+
+        expected = '[{"date": "20/03/2023", "subject": "STORIA", "kind": "Orale", "value": "10", "teacher": "Novelli Cristina", "comment": ""}, {"date": "17/03/2023", "subject": "ITALIANO", "kind": "Orale", "value": "8", "teacher": "Rapalino Lara", "comment": "Presentazione orale del libro letto"}, {"date": "16/03/2023", "subject": "LINGUA STRANIERA INGLESE", "kind": "Scritto", "value": "8,25", "teacher": "Barbero Daniela", "comment": "Verifica units 5-6"}, {"date": "15/03/2023", "subject": "TECNOLOGIA e INFORMATICA", "kind": "Grafico", "value": "8", "teacher": "Pavarin Maria Luisa", "comment": ""}, {"date": "08/03/2023", "subject": "ITALIANO", "kind": "Scritto", "value": "8.5", "teacher": "Rapalino Lara", "comment": "Epica: epica omerica e Iliade"}, {"date": "08/03/2023", "subject": "TECNOLOGIA e INFORMATICA", "kind": "Grafico", "value": "8.5", "teacher": "Pavarin Maria Luisa", "comment": ""}, {"date": "06/03/2023", "subject": "ITALIANO", "kind": "Orale", "value": "8", "teacher": "Rapalino Lara", "comment": "La fiaba"}, {"date": "02/03/2023", "subject": "SCIENZE", "kind": "Scritto", "value": "8,75", "teacher": "Micela Silvia", "comment": ""}, {"date": "22/02/2023", "subject": "GEOGRAFIA", "kind": "Orale", "value": "7.75", "teacher": "Gardello Martina", "comment": ""}, {"date": "17/02/2023", "subject": "MATEMATICA", "kind": "Scritto", "value": "9", "teacher": "Micela Silvia", "comment": "Verifica scritta di aritmetica sulle quattro operazioni e le loro propriet\\u00e0."}, {"date": "16/02/2023", "subject": "MUSICA", "kind": "Scritto", "value": "6", "teacher": "Cataldo Francesco", "comment": "Verifica scritta di carattere teorico."}, {"date": "16/02/2023", "subject": "ARTE E IMMAGINE", "kind": "Grafico", "value": "9", "teacher": "Pagliarulo Veronica", "comment": "Arte egizia"}, {"date": "15/02/2023", "subject": "TECNOLOGIA e INFORMATICA", "kind": "Scritto", "value": "8.75", "teacher": "Pavarin Maria Luisa", "comment": ""}, {"date": "07/02/2023", "subject": "LINGUA STRANIERA FRANCESE", "kind": "Scritto", "value": "8", "teacher": "Giovannini Sonia", "comment": "Verifica Unit\\u00e9 3"}]\n'
+
+        assert result.exit_code == 0, result.output
+        assert result.output == expected
+
+
+@pytest.mark.vcr(filter_query_parameters=["txtUser", "txtPassword"])
+@pytest.mark.block_network
+def test_grades_list_ndjson():
+    runner = CliRunner()
+    with runner.isolated_filesystem():
+        result = runner.invoke(cli, ["--output-format", "ndjson", "grades", "list"], env=env)
+        with open("/tmp/sample.txt", "w") as f:
+            f.write(result.output)
+
+        expected = """{"date": "23/03/2023", "subject": "ARTE E IMMAGINE", "kind": "Grafico", "value": "9", "teacher": "Pagliarulo Veronica", "comment": "Concorso LAV"}
+{"date": "20/03/2023", "subject": "STORIA", "kind": "Orale", "value": "10", "teacher": "Novelli Cristina", "comment": ""}
+{"date": "17/03/2023", "subject": "ITALIANO", "kind": "Orale", "value": "8", "teacher": "Rapalino Lara", "comment": "Presentazione orale del libro letto"}
+{"date": "16/03/2023", "subject": "LINGUA STRANIERA INGLESE", "kind": "Scritto", "value": "8,25", "teacher": "Barbero Daniela", "comment": "Verifica units 5-6"}
+{"date": "15/03/2023", "subject": "TECNOLOGIA e INFORMATICA", "kind": "Grafico", "value": "8", "teacher": "Pavarin Maria Luisa", "comment": ""}
+{"date": "08/03/2023", "subject": "ITALIANO", "kind": "Scritto", "value": "8.5", "teacher": "Rapalino Lara", "comment": "Epica: epica omerica e Iliade"}
+{"date": "08/03/2023", "subject": "TECNOLOGIA e INFORMATICA", "kind": "Grafico", "value": "8.5", "teacher": "Pavarin Maria Luisa", "comment": ""}
+{"date": "06/03/2023", "subject": "ITALIANO", "kind": "Orale", "value": "8", "teacher": "Rapalino Lara", "comment": "La fiaba"}
+{"date": "02/03/2023", "subject": "SCIENZE", "kind": "Scritto", "value": "8,75", "teacher": "Micela Silvia", "comment": ""}
+{"date": "22/02/2023", "subject": "GEOGRAFIA", "kind": "Orale", "value": "7.75", "teacher": "Gardello Martina", "comment": ""}
+{"date": "17/02/2023", "subject": "MATEMATICA", "kind": "Scritto", "value": "9", "teacher": "Micela Silvia", "comment": "Verifica scritta di aritmetica sulle quattro operazioni e le loro propriet\\u00e0."}
+{"date": "16/02/2023", "subject": "MUSICA", "kind": "Scritto", "value": "6", "teacher": "Cataldo Francesco", "comment": "Verifica scritta di carattere teorico."}
+{"date": "16/02/2023", "subject": "ARTE E IMMAGINE", "kind": "Grafico", "value": "9", "teacher": "Pagliarulo Veronica", "comment": "Arte egizia"}
+{"date": "15/02/2023", "subject": "TECNOLOGIA e INFORMATICA", "kind": "Scritto", "value": "8.75", "teacher": "Pavarin Maria Luisa", "comment": ""}
+{"date": "07/02/2023", "subject": "LINGUA STRANIERA FRANCESE", "kind": "Scritto", "value": "8", "teacher": "Giovannini Sonia", "comment": "Verifica Unit\\u00e9 3"}
+"""
+
+        assert result.exit_code == 0, result.output
+        assert result.output == expected
