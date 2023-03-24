@@ -57,7 +57,7 @@ To select a different year or period, run:
     # you can combine them, of course
     axios --year 2021 --period FT01
 
-To format the output in JSON or JDJSON, run:
+To format the output in JSON or NDJSON, run:
 
     $ axios --output-format json grades list
     [
