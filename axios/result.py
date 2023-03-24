@@ -10,16 +10,16 @@ from rich.table import Table
 from .models import Grade
 
 
-def render(result: Any, format: str = "text") -> str:
+def render(result: Any, output_format: str = "text") -> str:
     """Render the result in the specified format."""
-    if format == "text":
+    if output_format == "text":
         return str(result)
-    elif format == "json":
+    elif output_format == "json":
         return result.json()
-    elif format == "ndjson":
+    elif output_format == "ndjson":
         return result.ndjson()
     else:
-        raise ValueError("Unknown format: " + format)
+        raise ValueError("Unknown format: " + output_format)
 
 
 class GradesListResult:

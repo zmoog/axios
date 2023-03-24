@@ -29,7 +29,7 @@ today = datetime.date.today()
     envvar="AXIOS_STUDENT_PERIOD",
 )
 @click.option(
-    "--format",
+    "--output-format",
     type=click.Choice(['json', 'ndjson', 'text'],
     case_sensitive=False),
     default="text",
@@ -52,7 +52,7 @@ def cli(
     student_id: str,
     year: int,
     period: str,
-    format: str,
+    output_format: str,
     verbose: bool,
 ):
     """Command line utility to access https://family.axioscloud.it"""
@@ -63,7 +63,7 @@ def cli(
     ctx.obj["student_id"] = student_id
     ctx.obj["year"] = year
     ctx.obj["period"] = period
-    ctx.obj["format"] = format
+    ctx.obj["output_format"] = output_format
     ctx.obj["verbose"] = verbose
 
 
@@ -110,6 +110,6 @@ def list_grades(ctx: click.Context):
     click.echo(
         render(
             GradesListResult(nav.list_grades()),
-            format=ctx.obj["format"],
+            output_format=ctx.obj["output_format"],
         )
     )
