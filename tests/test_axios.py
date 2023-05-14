@@ -234,7 +234,7 @@ def test_list_grades():
                                                                  Cristina       
                                                                                 
 
-"""
+"""  # noqa: W291 W293
         )
 
 

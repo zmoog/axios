@@ -43,7 +43,6 @@ class Navigator:
         self,
         credentials: Credentials,
         student_id: str,
-        session: requests.Session = requests.Session(),
         verbose: bool = False,
     ):
         self.credentials = credentials
@@ -52,7 +51,7 @@ class Navigator:
             period="FT01" if 9 < today.month < 2 else "FT02",
             student_id=student_id,
         )
-        self.session = session
+        self.session = requests.Session()
         self.verbose = verbose
 
     def login(self) -> Profile:
@@ -173,9 +172,9 @@ class Navigator:
         """Select the student"""
         self.state.student_id = student_id
 
-    def select_year(self, year: int, day=date.today()) -> None:
+    def select_year(self, year: int, day=None) -> None:
         """Select the year"""
-
+        day = day or date.today()
         if self.state.year == year:
             if self.verbose:
                 print(
