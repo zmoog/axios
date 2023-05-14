@@ -50,6 +50,7 @@ setup(
             "types-Pygments",
             "types-requests",
             "types-setuptools",
+            "urllib3<2",
         ]
     },
     python_requires=">=3.8",
