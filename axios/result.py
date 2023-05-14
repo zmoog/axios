@@ -1,4 +1,4 @@
-import dataclasses
+import datetime
 import io
 import json
 from typing import Any, List
@@ -22,8 +22,15 @@ def render(result: Any, output_format: str = "text") -> str:
         raise ValueError("Unknown format: " + output_format)
 
 
+class DateTimeEncoder(json.JSONEncoder):
+    """JSON encoder for object containing datetime values."""
+
+    def default(self, obj):
+        if isinstance(obj, (datetime.date, datetime.datetime)):
+            return obj.isoformat()
+
+
 class GradesListResult:
-    
     def __init__(self, grades: List[Grade]) -> None:
         self.grades = grades
 
@@ -38,7 +45,8 @@ class GradesListResult:
 
         for g in self.grades:
             table.add_row(
-                str(g.date),
+                # str(g.date.strftime("%Y-%m-%d")),
+                str(g.date.strftime("%d/%m/%Y")),
                 str(g.subject),
                 str(g.kind),
                 str(g.value),
@@ -56,7 +64,11 @@ class GradesListResult:
         return output.getvalue()
 
     def json(self) -> str:
-        return json.dumps([g.__dict__ for g in self.grades])
+        return json.dumps(
+            [g.__dict__ for g in self.grades], cls=DateTimeEncoder
+        )
 
     def ndjson(self) -> str:
-        return "\n".join([json.dumps(g.__dict__) for g in self.grades])
+        return "\n".join(
+            [json.dumps(g.__dict__, cls=DateTimeEncoder) for g in self.grades],
+        )

@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from datetime import date
+from datetime import date, datetime
 from typing import Any, List
 
 import requests
@@ -155,7 +155,9 @@ class Navigator:
         for row in rows:
             grades.append(
                 Grade(
-                    date=first(row.xpath("td[1]/text()")),
+                    date=datetime.strptime(
+                        first(row.xpath("td[1]/text()")), "%d/%m/%Y"
+                    ),
                     subject=first(row.xpath("td[2]/text()")),
                     kind=first(row.xpath("td[3]/text()")),
                     value=first(row.xpath("td[4]/span/text()")),
