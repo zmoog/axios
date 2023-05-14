@@ -31,18 +31,18 @@ To list latest grades, run:
 
       Data         Materia                      Tipo      Voto   Obiettivi   Commento                                                                                Docente
      ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-      06/12/2022   TECNOLOGIA e INFORMATICA     Scritto   7.5                                                                                                        Pavarin Maria Luisa
-      02/12/2022   MATEMATICA                   Scritto   7,75               Verifica sugli insiemi                                                                  Micela Silvia
-      01/12/2022   ARTE E IMMAGINE              Grafico   10                 Tav.3 figura e sfondo                                                                   Pagliarulo Veronica
-      01/12/2022   ARTE E IMMAGINE              Grafico   7/8                Tav.1 Punto e linea                                                                     Pagliarulo Veronica
-      30/11/2022   MUSICA                       Orale     7                  Verifica di carattere teorico. Interrogazione su tutto il programma svolto finora.      Cataldo Francesco
-      24/11/2022   ITALIANO                     Scritto   8.5                Fonologia e ortografia                                                                  Rapalino Lara
-      23/11/2022   TECNOLOGIA e INFORMATICA     Grafico   6.5                                                                                                        Pavarin Maria Luisa
-      23/11/2022   MUSICA                       Orale     7,5                Verifica di carattere teorico. Interrogazione su tutto il programma svolto finora.      Cataldo Francesco
-      18/11/2022   MATEMATICA                   Grafico   8,5                Verifica sulle equivalenze e le operazioni con le misure del tempo                      Micela Silvia
-      16/11/2022   TECNOLOGIA e INFORMATICA     Grafico   7                                                                                                          Pavarin Maria Luisa
-      10/11/2022   ARTE E IMMAGINE              Grafico   8                  Poster per la pace                                                                      Pagliarulo Veronica
-      09/11/2022   LINGUA STRANIERA INGLESE     Scritto   8,5                Test units 1 e 2                                                                        Barbero Daniela
+      2022-12-06   TECNOLOGIA e INFORMATICA     Scritto   7.5                                                                                                        Pavarin Maria Luisa
+      2022-12-02   MATEMATICA                   Scritto   7,75               Verifica sugli insiemi                                                                  Micela Silvia
+      2022-12-01   ARTE E IMMAGINE              Grafico   10                 Tav.3 figura e sfondo                                                                   Pagliarulo Veronica
+      2022-12-01   ARTE E IMMAGINE              Grafico   7/8                Tav.1 Punto e linea                                                                     Pagliarulo Veronica
+      2022-11-30   MUSICA                       Orale     7                  Verifica di carattere teorico. Interrogazione su tutto il programma svolto finora.      Cataldo Francesco
+      2022-11-24   ITALIANO                     Scritto   8.5                Fonologia e ortografia                                                                  Rapalino Lara
+      2022-11-23   TECNOLOGIA e INFORMATICA     Grafico   6.5                                                                                                        Pavarin Maria Luisa
+      2022-11-23   MUSICA                       Orale     7,5                Verifica di carattere teorico. Interrogazione su tutto il programma svolto finora.      Cataldo Francesco
+      2022-11-18   MATEMATICA                   Grafico   8,5                Verifica sulle equivalenze e le operazioni con le misure del tempo                      Micela Silvia
+      2022-11-16   TECNOLOGIA e INFORMATICA     Grafico   7                                                                                                          Pavarin Maria Luisa
+      2022-11-10   ARTE E IMMAGINE              Grafico   8                  Poster per la pace                                                                      Pagliarulo Veronica
+      2022-11-09   LINGUA STRANIERA INGLESE     Scritto   8,5                Test units 1 e 2                                                                        Barbero Daniela
 
 Defaults to current year and period.
 
@@ -62,7 +62,7 @@ To format the output in JSON or NDJSON, run:
     $ axios --output-format json grades list
     [
         {
-            "date": "23/03/2023",
+            "date": "2023-03-23",
             "subject": "ARTE E IMMAGINE",
             "kind": "Grafico",
             "value": "9",
@@ -70,7 +70,7 @@ To format the output in JSON or NDJSON, run:
             "comment": "Concorso LAV"
         },
         {
-            "date": "20/03/2023",
+            "date": "2023-03-20",
             "subject": "STORIA",
             "kind": "Orale",
             "value": "10",
@@ -80,8 +80,8 @@ To format the output in JSON or NDJSON, run:
     ]
 
     $ axios --output-format ndjson grades list
-    {"date": "23/03/2023", "subject": "ARTE E IMMAGINE", "kind": "Grafico", "value": "9", "teacher": "Pagliarulo Veronica", "comment": "Concorso LAV"}
-    {"date": "20/03/2023", "subject": "STORIA", "kind": "Orale", "value": "10", "teacher": "Novelli Cristina", "comment": ""}
+    {"date": "2023-03-23", "subject": "ARTE E IMMAGINE", "kind": "Grafico", "value": "9", "teacher": "Pagliarulo Veronica", "comment": "Concorso LAV"}
+    {"date": "2023-03-20", "subject": "STORIA", "kind": "Orale", "value": "10", "teacher": "Novelli Cristina", "comment": ""}
 
 For help, run:
 
