@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from datetime import date
 
 
 @dataclass
@@ -17,8 +18,8 @@ class Profile(object):
 
 
 @dataclass
-class Grade(object):
-    date: str
+class Grade:
+    date: date
     subject: str
     kind: str
     value: str

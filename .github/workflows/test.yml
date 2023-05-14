@@ -27,6 +27,6 @@ jobs:
     - name: Install dependencies
       run: |
         pip install -e '.[test]'
-    - name: Run tests
+    - name: Check if everything is ready to ship
       run: |
-        pytest
+        make ready

@@ -30,8 +30,7 @@ today = datetime.date.today()
 )
 @click.option(
     "--output-format",
-    type=click.Choice(['json', 'ndjson', 'text'],
-    case_sensitive=False),
+    type=click.Choice(["json", "ndjson", "text"], case_sensitive=False),
     default="text",
 )
 @click.option(
