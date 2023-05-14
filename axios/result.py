@@ -45,8 +45,7 @@ class GradesListResult:
 
         for g in self.grades:
             table.add_row(
-                # str(g.date.strftime("%Y-%m-%d")),
-                str(g.date.strftime("%d/%m/%Y")),
+                str(g.date.strftime("%Y-%m-%d")),
                 str(g.subject),
                 str(g.kind),
                 str(g.value),
